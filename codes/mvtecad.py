@@ -5,7 +5,7 @@ from glob import glob
 from sklearn.metrics import roc_auc_score
 import os
 
-DATASET_PATH = '/path/to/the/dataset'
+DATASET_PATH = '/home/rise/.repos/DABA5-Stent/datasets/mvtec_anomaly_detection'
 
 
 __all__ = ['objs', 'set_root_path',
@@ -17,9 +17,11 @@ objs = ['bottle', 'cable', 'capsule', 'carpet', 'grid', 'hazelnut',
         'transistor', 'wood', 'zipper']
 
 
-def resize(image, shape=(256, 256)):
+def resize(image, shape=(512, 512)):
     return np.array(Image.fromarray(image).resize(shape[::-1]))
 
+def no_resize(image):
+    return np.array(Image.fromarray(image))
 
 def bilinears(images, shape) -> np.ndarray:
     import cv2
@@ -62,7 +64,7 @@ def get_x(obj, mode='train'):
 
     if images.shape[-1] != 3:
         images = gray2rgb(images)
-    images = list(map(resize, images))
+    images = list(map(no_resize, images))
     images = np.asarray(images)
     return images
 
@@ -89,7 +91,7 @@ def get_label(obj):
 def get_mask(obj):
     fpattern = os.path.join(DATASET_PATH, f'{obj}/ground_truth/*/*.png')
     fpaths = sorted(glob(fpattern))
-    masks = np.asarray(list(map(lambda fpath: resize(imread(fpath), (256, 256)), fpaths)))
+    masks = np.asarray(list(map(lambda fpath: resize(imread(fpath), (512, 512)), fpaths)))
     Nanomaly = masks.shape[0]
     Nnormal = len(glob(os.path.join(DATASET_PATH, f'{obj}/test/good/*.png')))
 
@@ -118,7 +120,7 @@ def segmentation_auroc(obj, anomaly_maps):
     gt = gt.astype(np.int32)
     gt[gt == 255] = 1  # 1: anomaly
 
-    anomaly_maps = bilinears(anomaly_maps, (256, 256))
+    anomaly_maps = bilinears(anomaly_maps, (512, 512))
     auroc = roc_auc_score(gt.flatten(), anomaly_maps.flatten())
     return auroc
 

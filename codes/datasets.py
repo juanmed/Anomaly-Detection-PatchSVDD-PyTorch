@@ -93,7 +93,7 @@ class SVDD_Dataset(Dataset):
         K = self.K
         n = idx % N
 
-        p1, p2 = generate_coords_svdd(256, 256, K)
+        p1, p2 = generate_coords_svdd(512, 512, K)
 
         image = self.arr[n]
 
@@ -131,7 +131,7 @@ class PositionDataset(Dataset):
         n = idx % N
 
         image = self.x[n]
-        p1, p2, pos = generate_coords_position(256, 256, K)
+        p1, p2, pos = generate_coords_position(512, 512, K)
 
         patch1 = crop_image_CHW(image, p1, K).copy()
         patch2 = crop_image_CHW(image, p2, K).copy()

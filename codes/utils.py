@@ -176,5 +176,5 @@ def distribute_score(score_mask, output_shape, K: int, S: int) -> np.ndarray:
     return mask / cnt
 
 
-def resize(image, shape=(256, 256)):
+def resize(image, shape=(512, 512)):
     return np.array(Image.fromarray(image).resize(shape[::-1]))
